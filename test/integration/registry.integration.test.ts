@@ -5,6 +5,13 @@ import { NpmRegistry } from '../../src/registry.ts';
 describe('NPM Registry (integration)', () => {
   const registry = new NpmRegistry();
 
+  describe('getRegistryMetadata', () => {
+    test('should get registry metadata', async () => {
+      const result = await registry.getRegistryMetadata();
+      ok(result);
+    });
+  });
+
   describe('getPackage', () => {
     test('should get package information', async () => {
       const result = await registry.getPackage('react');

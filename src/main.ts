@@ -1,9 +1,3 @@
-export type {
-  PackageInfo,
-  PackageMetadata,
-  PackageVersions,
-  SearchResults,
-  DistTags,
-} from './types.ts';
+export * from './types/index.ts';
 
 export { NpmRegistry } from './registry.ts';

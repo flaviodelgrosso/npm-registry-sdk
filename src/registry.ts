@@ -5,9 +5,10 @@ import type {
   DistTags,
   PackageInfo,
   PackageMetadata,
+  RegistryMetadata,
   SearchOptions,
   SearchResults,
-} from './types.ts';
+} from './types/index.ts';
 
 const DEFAULT_REGISTRY_URL = 'https://registry.npmjs.org';
 
@@ -33,6 +34,17 @@ export class NpmRegistry {
     this.url = url || DEFAULT_REGISTRY_URL;
     this.signal = signal;
     this.headers = headers;
+  }
+
+  /**
+   * Get the registry metadata
+   * @returns The registry metadata
+   * @see https://github.com/npm/registry/blob/main/docs/REGISTRY-API.md#get
+   */
+  public getRegistryMetadata(): Promise<RegistryMetadata> {
+    return this.#request<RegistryMetadata>({
+      endpoint: api.getRegistryMetadata(),
+    });
   }
 
   /**

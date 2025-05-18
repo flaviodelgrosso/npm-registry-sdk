@@ -6,6 +6,21 @@ describe('Registry', () => {
   const registry = new NpmRegistry();
   const mockedFetch = mock.method(globalThis, 'fetch');
 
+  test('should get registry metadata', async () => {
+    mockedFetch.mock.mockImplementationOnce(
+      async () =>
+        ({
+          ok: true,
+          json: async () => ({
+            disk_size: 123456789,
+          }),
+        }) as Response,
+    );
+
+    const result = await registry.getRegistryMetadata();
+    ok(result.disk_size);
+  });
+
   test('should get package information', async () => {
     mockedFetch.mock.mockImplementationOnce(
       async () =>
