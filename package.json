@@ -1,13 +1,24 @@
 {
   "name": "npm-registry-sdk",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A fully type-safe client library for the npm registry API.",
   "author": "Flavio Del Grosso",
   "license": "ISC",
   "type": "module",
   "main": "dist/main.js",
-  "files": ["dist"],
-  "keywords": ["npm", "registry", "nodejs", "search", "package", "api", "client", "typescript"],
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "npm",
+    "registry",
+    "nodejs",
+    "search",
+    "package",
+    "api",
+    "client",
+    "typescript"
+  ],
   "homepage": "https://github.com/flaviodelgrosso/npm-registry-sdk#readme",
   "repository": {
     "type": "git",
