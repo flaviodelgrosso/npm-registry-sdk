@@ -81,6 +81,13 @@ const versionInfo = await registry.getPackageVersion('react', '18.2.0');
 const latestInfo = await registry.getLatestVersion('react');
 ```
 
+### Get Dist Tags
+
+```typescript
+const tags = await registry.getDistTags('react');
+console.log(tags.latest); // e.g., '18.2.0'
+```
+
 ### Download Package Tarball
 
 ```typescript
