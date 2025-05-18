@@ -1,7 +1,13 @@
 import { api } from './api.ts';
 import { RegistryError } from './error.ts';
 import { type SearchQueryQualifiers, buildSearchQueryWithQualifiers } from './qualifiers.ts';
-import type { PackageInfo, PackageMetadata, SearchOptions, SearchResults } from './types.ts';
+import type {
+  DistTags,
+  PackageInfo,
+  PackageMetadata,
+  SearchOptions,
+  SearchResults,
+} from './types.ts';
 
 const DEFAULT_REGISTRY_URL = 'https://registry.npmjs.org';
 
@@ -36,7 +42,7 @@ export class NpmRegistry {
    * @see https://github.com/npm/registry/blob/main/docs/REGISTRY-API.md#getpackage
    */
   public async getPackage(packageName: string): Promise<PackageInfo> {
-    return this.#__request<PackageInfo>({
+    return this.#request<PackageInfo>({
       endpoint: api.getPackage(packageName),
     });
   }
@@ -49,7 +55,7 @@ export class NpmRegistry {
    * @see https://github.com/npm/registry/blob/main/docs/REGISTRY-API.md#getpackageversion
    */
   public async getPackageVersion(packageName: string, version: string): Promise<PackageMetadata> {
-    return this.#__request<PackageMetadata>({
+    return this.#request<PackageMetadata>({
       endpoint: api.getPackageVersion(packageName, version),
     });
   }
@@ -60,7 +66,7 @@ export class NpmRegistry {
    * @returns The latest version metadata
    */
   public async getLatestVersion(packageName: string): Promise<PackageMetadata> {
-    return this.#__request<PackageMetadata>({
+    return this.#request<PackageMetadata>({
       endpoint: api.getLatestVersion(packageName),
     });
   }
@@ -81,12 +87,23 @@ export class NpmRegistry {
       ? buildSearchQueryWithQualifiers(query, qualifiers)
       : query;
 
-    return this.#__request({
+    return this.#request<SearchResults>({
       endpoint: api.search(),
       params: {
         text: queryWithQualifiers,
         ...searchOptions,
       },
+    });
+  }
+
+  /**
+   * Get the dist-tags for a package
+   * @param packageName The package name
+   * @returns The dist-tags
+   */
+  public async getDistTags(packageName: string): Promise<DistTags> {
+    return this.#request<DistTags>({
+      endpoint: api.getDistTags(packageName),
     });
   }
 
@@ -114,7 +131,7 @@ export class NpmRegistry {
     return response.arrayBuffer();
   }
 
-  async #__request<T>({ endpoint, params }: RequestOptions): Promise<T> {
+  async #request<T>({ endpoint, params }: RequestOptions): Promise<T> {
     const url = new URL(`${this.url}${endpoint}`);
     if (params) {
       for (const [key, value] of Object.entries(params)) {

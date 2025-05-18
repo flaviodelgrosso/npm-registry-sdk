@@ -209,4 +209,21 @@ describe('Registry', () => {
       error: 'Package not found',
     });
   });
+
+  test('should get dist tags', async () => {
+    mockedFetch.mock.mockImplementationOnce(
+      async () =>
+        ({
+          ok: true,
+          json: async () => ({
+            latest: '18.2.0',
+            next: '19.0.0',
+          }),
+        }) as Response,
+    );
+
+    const result = await registry.getDistTags('react');
+    strictEqual(result.latest, '18.2.0');
+    strictEqual(result.next, '19.0.0');
+  });
 });

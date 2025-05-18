@@ -156,3 +156,13 @@ export type PackageInfo = {
   /** The readmeFilename of the package */
   readmeFilename?: string;
 };
+
+export type DistTags = {
+  latest: string;
+  next?: string;
+  canary?: string;
+  rc?: string;
+  beta?: string;
+  alpha?: string;
+  experimental?: string;
+};

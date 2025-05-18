@@ -8,6 +8,8 @@ export const api = {
 
   search: () => '/-/v1/search',
 
+  getDistTags: (packageName: string) => `/-/package/${encodeURIComponent(packageName)}/dist-tags`,
+
   downloadTarball: (packageName: string, version: string) =>
     `/${encodeURIComponent(packageName)}/-/${encodeURIComponent(packageName)}-${encodeURIComponent(version)}.tgz`,
 } as const;

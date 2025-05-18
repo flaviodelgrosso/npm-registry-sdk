@@ -37,4 +37,12 @@ describe('NPM Registry (integration)', () => {
       ok(result.objects[0].package.name.includes('react'));
     });
   });
+
+  describe('getDistTags', () => {
+    test('should get distribution tags', async () => {
+      const result = await registry.getDistTags('react');
+      ok(result.latest);
+      ok(result.next);
+    });
+  });
 });
