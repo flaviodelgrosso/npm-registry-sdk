@@ -5,6 +5,7 @@ import type {
   DistTags,
   PackageInfo,
   PackageMetadata,
+  RegistryKeys,
   RegistryMetadata,
   SearchOptions,
   SearchResults,
@@ -44,6 +45,17 @@ export class NpmRegistry {
   public getRegistryMetadata(): Promise<RegistryMetadata> {
     return this.#request<RegistryMetadata>({
       endpoint: api.getRegistryMetadata(),
+    });
+  }
+
+  /**
+   * Get the public signing keys used by the registry.
+   * @returns The registry keys
+   * @see https://docs.npmjs.com/about-registry-signatures
+   */
+  public async getRegistryKeys(): Promise<RegistryKeys> {
+    return this.#request<RegistryKeys>({
+      endpoint: api.getRegistryKeys(),
     });
   }
 

@@ -12,6 +12,13 @@ describe('NPM Registry (integration)', () => {
     });
   });
 
+  describe('getRegistryKeys', () => {
+    test('should get registry keys', async () => {
+      const result = await registry.getRegistryKeys();
+      ok(result.keys);
+    });
+  });
+
   describe('getPackage', () => {
     test('should get package information', async () => {
       const result = await registry.getPackage('react');

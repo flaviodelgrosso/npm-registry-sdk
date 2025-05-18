@@ -21,6 +21,26 @@ describe('Registry', () => {
     ok(result.disk_size);
   });
 
+  test('should get registry keys', async () => {
+    mockedFetch.mock.mockImplementationOnce(
+      async () =>
+        ({
+          ok: true,
+          json: async () => ({
+            keys: [
+              {
+                key: 'registry-fake-key--',
+                expires: '2023-01-01T00:00:00.000Z',
+              },
+            ],
+          }),
+        }) as Response,
+    );
+
+    const result = await registry.getRegistryKeys();
+    ok(result.keys.length > 0);
+  });
+
   test('should get package information', async () => {
     mockedFetch.mock.mockImplementationOnce(
       async () =>

@@ -1,6 +1,8 @@
 export const api = {
   getRegistryMetadata: () => '/',
 
+  getRegistryKeys: () => '/-/npm/v1/keys',
+
   getPackage: (packageName: string) => `/${encodeURIComponent(packageName)}`,
 
   getPackageVersion: (packageName: string, version: string) =>
