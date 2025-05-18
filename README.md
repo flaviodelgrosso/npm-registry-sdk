@@ -88,6 +88,20 @@ const tags = await registry.getDistTags('react');
 console.log(tags.latest); // e.g., '18.2.0'
 ```
 
+### Get registry metadata
+
+```typescript
+const metadata = await registry.getMetadata();
+console.log(metadata); // e.g., { db_name: '', db_count: '', ... }
+```
+
+### Get public signing keys used by the registry
+
+```typescript
+const registryKeys = await registry.getRegistryKeys();
+console.log(keys); // e.g., { keys: [{ 'expires': '...', 'keyid': '...' }] }
+```
+
 ### Download Package Tarball
 
 ```typescript
@@ -110,6 +124,9 @@ interface RegistryOptions {
 
 #### Methods
 
+- `getMetadata(): Promise<RegistryMetadata>`
+- `getDistTags(packageName: string): Promise<DistTags>`
+- `getRegistryKeys(): Promise<RegistryKeys>`
 - `getPackage(packageName: string): Promise<PackageInfo>`
 - `getPackageVersion(packageName: string, version: string): Promise<PackageMetadata>`
 - `getLatestVersion(packageName: string): Promise<PackageMetadata>`
