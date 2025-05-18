@@ -1,10 +1,14 @@
 import { ok, rejects, strictEqual } from 'node:assert';
-import { describe, mock, test } from 'node:test';
+import { afterEach, describe, mock, test } from 'node:test';
 import NpmRegistry from '../src/registry.ts';
 
 describe('Registry', () => {
   const registry = new NpmRegistry();
   const mockedFetch = mock.method(globalThis, 'fetch');
+
+  afterEach(() => {
+    mockedFetch.mock.resetCalls();
+  });
 
   test('should get registry metadata', async () => {
     mockedFetch.mock.mockImplementationOnce(
