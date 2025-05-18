@@ -1,6 +1,6 @@
 import { ok, rejects, strictEqual } from 'node:assert';
 import { describe, mock, test } from 'node:test';
-import { NpmRegistry } from '../src/registry.ts';
+import NpmRegistry from '../src/registry.ts';
 
 describe('Registry', () => {
   const registry = new NpmRegistry();
