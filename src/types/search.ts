@@ -1,3 +1,4 @@
+import type { SearchQueryQualifiers } from '../qualifiers.ts';
 import type { Objects } from './package.ts';
 
 export type SearchOptions = {
@@ -11,6 +12,8 @@ export type SearchOptions = {
   popularity?: number;
   /** How much of an effect should maintenance have on search results */
   maintenance?: number;
+  /** Qualifiers to append to the query */
+  qualifiers?: SearchQueryQualifiers;
 };
 
 export type SearchResults = {

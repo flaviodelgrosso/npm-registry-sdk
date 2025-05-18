@@ -1,6 +1,6 @@
 import { endpoints } from './endpoints.ts';
 import { RegistryError } from './error.ts';
-import { type SearchQueryQualifiers, buildSearchQueryWithQualifiers } from './qualifiers.ts';
+import { buildSearchQueryWithQualifiers } from './qualifiers.ts';
 import type {
   DistTags,
   DownloadPeriod,
@@ -12,9 +12,9 @@ import type {
   SearchOptions,
   SearchResults,
 } from './types/index.ts';
-import { request } from './utils/request.ts';
+import { type RequestInitOptions, request } from './utils/request.ts';
 
-interface NpmRegistryOptions extends RequestInit {
+interface NpmRegistryOptions extends RequestInitOptions {
   /**
    * The base URL of the NPM Registry.
    * @default 'https://registry.npmjs.org'
@@ -34,7 +34,7 @@ const DEFAULT_REGISTRY_API_URL = 'https://api.npmjs.org';
 export class NpmRegistry {
   private registry: string;
   private api: string;
-  private request: RequestInit;
+  private request: RequestInitOptions;
 
   constructor({ api, registry, ...request }: NpmRegistryOptions = {}) {
     this.registry = registry || DEFAULT_REGISTRY_URL;
@@ -129,10 +129,7 @@ export class NpmRegistry {
    * @returns The search results
    * @see https://github.com/npm/registry/blob/main/docs/REGISTRY-API.md#get-v1search
    */
-  public async search(
-    query: string,
-    options?: SearchOptions & { qualifiers?: SearchQueryQualifiers },
-  ): Promise<SearchResults> {
+  public async search(query: string, options?: SearchOptions): Promise<SearchResults> {
     const { qualifiers, ...searchOptions } = options || {};
     const queryWithQualifiers = qualifiers
       ? buildSearchQueryWithQualifiers(query, qualifiers)

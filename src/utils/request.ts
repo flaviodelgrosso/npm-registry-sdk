@@ -1,6 +1,8 @@
 import { RegistryError } from '../error.ts';
 
-interface RequestOptions extends RequestInit {
+export type RequestInitOptions = Pick<RequestInit, 'headers' | 'signal'>;
+
+interface RequestOptions extends RequestInitOptions {
   endpoint: string;
   params?: Record<string, unknown>;
 }
@@ -26,12 +28,13 @@ export async function request<T>(registry: string, options: RequestOptions): Pro
   }
 
   const response = await fetch(urlString, {
-    method: request.method,
+    method: 'GET',
+    signal: request.signal,
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
+      ...request.headers,
     },
-    ...request,
   });
 
   const responseData = await response.json();
