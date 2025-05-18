@@ -183,13 +183,16 @@ getDistTags(packageName: string): Promise<DistTags>
 Search for packages in the registry.
 
 ```typescript
-search(query: string, options?: SearchOptions & { qualifiers?: SearchQueryQualifiers }): Promise<SearchResults>
+search(query: string, options?: SearchOptions): Promise<SearchResults>
 ```
 
 Options:
 
 - `size?: number` - Number of results per page
 - `from?: number` - Starting position
+- `quality?: number` - Quality score
+- `popularity?: number` - Popularity score
+- `maintenance?: number` - Maintenance score
 - `qualifiers?: SearchQueryQualifiers` - Additional search qualifiers (author, keywords, etc.)
 
 #### getRegistryDownloads
