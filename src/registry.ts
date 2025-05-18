@@ -31,7 +31,7 @@ interface NpmRegistryOptions extends RequestInitOptions {
 const DEFAULT_REGISTRY_URL = 'https://registry.npmjs.org';
 const DEFAULT_REGISTRY_API_URL = 'https://api.npmjs.org';
 
-export class NpmRegistry {
+export default class NpmRegistry {
   private registry: string;
   private api: string;
   private request: RequestInitOptions;
