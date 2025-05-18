@@ -33,6 +33,7 @@ export class NpmRegistry {
    * Get package information from the registry
    * @param packageName The package name
    * @returns The package information
+   * @see https://github.com/npm/registry/blob/main/docs/REGISTRY-API.md#getpackage
    */
   public async getPackage(packageName: string): Promise<PackageInfo> {
     return this.#__request<PackageInfo>({
@@ -45,6 +46,7 @@ export class NpmRegistry {
    * @param packageName The package name
    * @param version The package version
    * @returns Package metadata
+   * @see https://github.com/npm/registry/blob/main/docs/REGISTRY-API.md#getpackageversion
    */
   public async getPackageVersion(packageName: string, version: string): Promise<PackageMetadata> {
     return this.#__request<PackageMetadata>({
@@ -66,8 +68,9 @@ export class NpmRegistry {
   /**
    * Search for packages in the registry
    * @param query The search query
-   * @param size The number of results to return (max 250)
-   * @param from The starting point for pagination
+   * @param options The search options
+   * @returns The search results
+   * @see https://github.com/npm/registry/blob/main/docs/REGISTRY-API.md#get-v1search
    */
   public async search(
     query: string,
