@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.1](https://github.com/flaviodelgrosso/npm-registry-sdk/compare/v1.2.0...v1.2.1) (2025-05-18)
+
+
+### Bug Fixes
+
+* pass signal and headers correctly in additional request options ([31adcf4](https://github.com/flaviodelgrosso/npm-registry-sdk/commit/31adcf47022d3d940291f013b2576380481c197b))
+
 ## [1.2.0](https://github.com/flaviodelgrosso/npm-registry-sdk/compare/v1.1.0...v1.2.0) (2025-05-18)
 
 
