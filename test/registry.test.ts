@@ -41,6 +41,41 @@ describe('Registry', () => {
     ok(result.keys.length > 0);
   });
 
+  test('should get registry downloads', async () => {
+    mockedFetch.mock.mockImplementationOnce(
+      async () =>
+        ({
+          ok: true,
+          json: async () => ({
+            downloads: 123,
+            start: '2023-01-01T00:00:00.000Z',
+            end: '2023-01-02T00:00:00.000Z',
+          }),
+        }) as Response,
+    );
+
+    const result = await registry.getRegistryDownloads('last-week');
+    ok(result.downloads === 123);
+  });
+
+  test('should get package downloads', async () => {
+    mockedFetch.mock.mockImplementationOnce(
+      async () =>
+        ({
+          ok: true,
+          json: async () => ({
+            downloads: 123,
+            start: '2023-01-01T00:00:00.000Z',
+            end: '2023-01-02T00:00:00.000Z',
+            package: 'react',
+          }),
+        }) as Response,
+    );
+
+    const result = await registry.getRegistryDownloads('last-week', 'react');
+    ok(result.package === 'react');
+  });
+
   test('should get package information', async () => {
     mockedFetch.mock.mockImplementationOnce(
       async () =>

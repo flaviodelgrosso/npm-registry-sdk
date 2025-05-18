@@ -1,40 +1,45 @@
-import { api } from './api.ts';
+import { endpoints } from './endpoints.ts';
 import { RegistryError } from './error.ts';
 import { type SearchQueryQualifiers, buildSearchQueryWithQualifiers } from './qualifiers.ts';
 import type {
   DistTags,
+  DownloadPeriod,
   PackageInfo,
   PackageMetadata,
+  RegistryDownloads,
   RegistryKeys,
   RegistryMetadata,
   SearchOptions,
   SearchResults,
 } from './types/index.ts';
+import { request } from './utils/request.ts';
 
-const DEFAULT_REGISTRY_URL = 'https://registry.npmjs.org';
-
-type RequestOptions = {
-  endpoint: string;
-  params?: Record<string, unknown>;
-};
-
-type RegistryOptions = Pick<RequestInit, 'signal' | 'headers'> & {
+interface NpmRegistryOptions extends RequestInit {
   /**
-   * The base URL of the NPM Registry API.
+   * The base URL of the NPM Registry.
    * @default 'https://registry.npmjs.org'
    */
-  url?: string;
-};
+  registry?: string;
+
+  /**
+   * The base URL of the NPM Registry API.
+   * @default 'https://api.npmjs.org'
+   */
+  api?: string;
+}
+
+const DEFAULT_REGISTRY_URL = 'https://registry.npmjs.org';
+const DEFAULT_REGISTRY_API_URL = 'https://api.npmjs.org';
 
 export class NpmRegistry {
-  private url: string;
-  private signal?: AbortSignal | null;
-  private headers?: HeadersInit;
+  private registry: string;
+  private api: string;
+  private request: RequestInit;
 
-  constructor({ url, signal, headers }: RegistryOptions = {}) {
-    this.url = url || DEFAULT_REGISTRY_URL;
-    this.signal = signal;
-    this.headers = headers;
+  constructor({ api, registry, ...request }: NpmRegistryOptions = {}) {
+    this.registry = registry || DEFAULT_REGISTRY_URL;
+    this.api = api || DEFAULT_REGISTRY_API_URL;
+    this.request = request;
   }
 
   /**
@@ -43,8 +48,9 @@ export class NpmRegistry {
    * @see https://github.com/npm/registry/blob/main/docs/REGISTRY-API.md#get
    */
   public getRegistryMetadata(): Promise<RegistryMetadata> {
-    return this.#request<RegistryMetadata>({
-      endpoint: api.getRegistryMetadata(),
+    return request<RegistryMetadata>(this.registry, {
+      endpoint: endpoints.getRegistryMetadata(),
+      ...this.request,
     });
   }
 
@@ -54,8 +60,26 @@ export class NpmRegistry {
    * @see https://docs.npmjs.com/about-registry-signatures
    */
   public async getRegistryKeys(): Promise<RegistryKeys> {
-    return this.#request<RegistryKeys>({
-      endpoint: api.getRegistryKeys(),
+    return request<RegistryKeys>(this.registry, {
+      endpoint: endpoints.getRegistryKeys(),
+      ...this.request,
+    });
+  }
+
+  /**
+   * Get the download statistics for the registry
+   * @param period The download period (e.g., 'last-day', 'last-week', 'last-month', 'last-year', 'yyyy-mm-dd:yyyy-mm-dd')
+   * @param packageName The package name (optional)
+   * @returns The download statistics
+   * @see https://github.com/npm/registry/blob/master/docs/download-counts.md#point-values
+   */
+  public async getRegistryDownloads(
+    period: DownloadPeriod,
+    packageName?: string,
+  ): Promise<RegistryDownloads> {
+    return request<RegistryDownloads>(this.api, {
+      endpoint: endpoints.getRegistryDownloads(period, packageName),
+      ...this.request,
     });
   }
 
@@ -66,8 +90,9 @@ export class NpmRegistry {
    * @see https://github.com/npm/registry/blob/main/docs/REGISTRY-API.md#getpackage
    */
   public async getPackage(packageName: string): Promise<PackageInfo> {
-    return this.#request<PackageInfo>({
-      endpoint: api.getPackage(packageName),
+    return request<PackageInfo>(this.registry, {
+      endpoint: endpoints.getPackage(packageName),
+      ...this.request,
     });
   }
 
@@ -79,8 +104,9 @@ export class NpmRegistry {
    * @see https://github.com/npm/registry/blob/main/docs/REGISTRY-API.md#getpackageversion
    */
   public async getPackageVersion(packageName: string, version: string): Promise<PackageMetadata> {
-    return this.#request<PackageMetadata>({
-      endpoint: api.getPackageVersion(packageName, version),
+    return request<PackageMetadata>(this.registry, {
+      endpoint: endpoints.getPackageVersion(packageName, version),
+      ...this.request,
     });
   }
 
@@ -90,8 +116,9 @@ export class NpmRegistry {
    * @returns The latest version metadata
    */
   public async getLatestVersion(packageName: string): Promise<PackageMetadata> {
-    return this.#request<PackageMetadata>({
-      endpoint: api.getLatestVersion(packageName),
+    return request<PackageMetadata>(this.registry, {
+      endpoint: endpoints.getLatestVersion(packageName),
+      ...this.request,
     });
   }
 
@@ -111,12 +138,13 @@ export class NpmRegistry {
       ? buildSearchQueryWithQualifiers(query, qualifiers)
       : query;
 
-    return this.#request<SearchResults>({
-      endpoint: api.search(),
+    return request<SearchResults>(this.registry, {
+      endpoint: endpoints.search(),
       params: {
         text: queryWithQualifiers,
         ...searchOptions,
       },
+      ...this.request,
     });
   }
 
@@ -126,8 +154,9 @@ export class NpmRegistry {
    * @returns The dist-tags
    */
   public async getDistTags(packageName: string): Promise<DistTags> {
-    return this.#request<DistTags>({
-      endpoint: api.getDistTags(packageName),
+    return request<DistTags>(this.registry, {
+      endpoint: endpoints.getDistTags(packageName),
+      ...this.request,
     });
   }
 
@@ -138,11 +167,10 @@ export class NpmRegistry {
    * @returns The tarball as an ArrayBuffer
    */
   public async downloadTarball(packageName: string, version: string): Promise<ArrayBuffer> {
-    const tarballUrl = `${this.url}/${api.downloadTarball(packageName, version)}`;
+    const tarballUrl = this.registry + endpoints.downloadTarball(packageName, version);
 
     const response = await fetch(tarballUrl, {
-      signal: this.signal,
-      headers: this.headers,
+      ...this.request,
     });
 
     if (!response.ok) {
@@ -153,42 +181,5 @@ export class NpmRegistry {
     }
 
     return response.arrayBuffer();
-  }
-
-  async #request<T>({ endpoint, params }: RequestOptions): Promise<T> {
-    const url = new URL(`${this.url}${endpoint}`);
-    if (params) {
-      for (const [key, value] of Object.entries(params)) {
-        url.searchParams.append(key, String(value));
-      }
-    }
-
-    let urlString = url.origin + url.pathname;
-    if (url.search) {
-      // Base path; path segments like %2F remain encoded.
-      // url.search is the raw, percent-encoded query string (e.g., "?q=scope%3Atypes") or empty.
-      // This is needed to make API happy with the qualifiers,
-      // as it expects special characters (e.g., ':') in query values to be unencoded.
-      // decodeURIComponent("?q=scope%3Atypes") results in "?q=scope:types".
-      urlString += decodeURIComponent(url.search);
-    }
-
-    const response = await fetch(urlString, {
-      method: 'GET',
-      signal: this.signal,
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        ...this.headers,
-      },
-    });
-
-    const responseData = await response.json();
-
-    if (!response.ok) {
-      throw new RegistryError(responseData.error, responseData.code);
-    }
-
-    return responseData as T;
   }
 }

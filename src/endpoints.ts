@@ -1,7 +1,12 @@
-export const api = {
+import type { DownloadPeriod } from './types/downloads.ts';
+
+export const endpoints = {
   getRegistryMetadata: () => '/',
 
   getRegistryKeys: () => '/-/npm/v1/keys',
+
+  getRegistryDownloads: (period: DownloadPeriod, packageName?: string) =>
+    `/downloads/point/${encodeURIComponent(period)}${packageName ? `/${encodeURIComponent(packageName)}` : ''}`,
 
   getPackage: (packageName: string) => `/${encodeURIComponent(packageName)}`,
 

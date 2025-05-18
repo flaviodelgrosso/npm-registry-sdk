@@ -19,6 +19,23 @@ describe('NPM Registry (integration)', () => {
     });
   });
 
+  describe('getRegistryDownloads', () => {
+    test('should get registry downloads', async () => {
+      const result = await registry.getRegistryDownloads('last-week');
+      ok(result.downloads);
+      ok(result.end);
+      ok(result.start);
+    });
+
+    test('should get package downloads', async () => {
+      const result = await registry.getRegistryDownloads('last-week', '@slack/client');
+      ok(result.downloads);
+      ok(result.end);
+      ok(result.start);
+      ok(result.package);
+    });
+  });
+
   describe('getPackage', () => {
     test('should get package information', async () => {
       const result = await registry.getPackage('react');
