@@ -3,6 +3,7 @@ export type {
   PackageMetadata,
   PackageVersions,
   SearchResults,
+  DistTags,
 } from './types.ts';
 
 export { NpmRegistry } from './registry.ts';
